@@ -12,6 +12,16 @@ jobs:
   run-queries:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3132:3306
+        options: --health-cmd "mysqladmin ping --silent" --health-interval 10s --health-timeout 5s --health-retries 3
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -19,12 +29,25 @@ jobs:
     - name: Set up MySQL client
       run: sudo apt-get install mysql-client -y
 
-    - name: Run SQL queries
-      env:
-        DB_HOST: 172.17.0.2
-        DB_USER: root
-        DB_PASSWORD: root
-        DB_NAME: test_db
-        DB_PORT: 3132
+    - name: Check MySQL logs
+      run: docker logs $(docker ps -qf "ancestor=mysql:latest")
+
+    - name: List running containers
+      run: docker ps
+
+    - name: Wait for MySQL
       run: |
-        docker exec -it 89b33a7369e6 mysql -u root -proot -P3132 < sql-scripts/your-queries.sql 
+        for i in {30..0}; do
+          if echo 'SELECT 1' | mysql -h127.0.0.1 -P3132 -uroot -proot; then
+            break
+          fi
+          echo 'MySQL is unavailable - sleeping'
+          sleep 1
+        done
+
+    - name: Run SQL queries
+      run: |
+        for file in sql-scripts/*.sql; do
+          mysql -h127.0.0.1 -P3132 -uroot -proot test_db < $file
+        done
+
