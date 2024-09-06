@@ -27,6 +27,4 @@ jobs:
         DB_NAME: test_db
         DB_PORT: 3132
       run: |
-        CONTAINER_NAME=$(docker ps --filter "ancestor=mysql:latest" --format "{{.Names}}")
-          echo "CONTAINER_NAME=$CONTAINER_NAME" >> $GITHUB_ENV
-        docker exec -it ${{ env.CONTAINER_NAME }} mysql -u root -p -P3132 < sql-scripts/your-queries.sql 
+        docker exec -it 89b33a7369e6 mysql -u root -proot -P3132 < sql-scripts/your-queries.sql 
