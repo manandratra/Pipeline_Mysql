@@ -1,0 +1,18 @@
+name: Final Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy
+      run: |
+        echo "Déploiement final effectué !"
+        # Ajoutez ici les étapes de déploiement final spécifiques à votre projet
+
