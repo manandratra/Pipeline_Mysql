@@ -26,4 +26,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_NAME: ${{ secrets.DB_NAME }}
       run: |
+        echo "DB_HOST=$DB_HOST"
+        echo "DB_USER=$DB_USER"
+        echo "DB_NAME=$DB_NAME"
         mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD $DB_NAME < sql-scripts/your-queries.sql 
